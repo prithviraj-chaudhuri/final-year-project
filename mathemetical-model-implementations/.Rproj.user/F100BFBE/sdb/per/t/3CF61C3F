@@ -1,0 +1,17 @@
+{
+    "contents" : "require(gdata)\nrequire(stringr)\n\n#setting the memory limit to 1GB\nmemory.limit(size=102400)\n\n#loading all data in 2D matrix\nrows <- readLines(\"../facebook/facebook_combined.txt\")\negonet_table <- cbind(user_id = trim(substr(rows, 0, gregexpr(pattern ='\\\\s', rows))),  neighbour = trim(substr(rows, gregexpr(pattern ='\\\\s', rows), nchar(rows))))\n\n#removing variable\nrm(rows)\n\nper_adj_mat <- 500\n\nnum_adj_mat <- nrow(egonet_table)/per_adj_mat\n\n#adjacency matrix\nadj_egonet <- matrix(rep(0), nrow = per_adj_mat, ncol = nrow(egonet_table), byrow = TRUE )\ncolnames(adj_egonet) <- seq(1:nrow(egonet_table))\n\nwrite.table(adj_egonet, file = \"adj-matrix.csv\", sep = \"|\" , row.names=TRUE, col.names=FALSE)\n\nfor (k in 1:num_adj_mat ){\n  \n  rownames(as.numeric(adj_egonet)) <- seq(k,k+500)\n  \n  #iterating through all the rows n the table\n  for (i in k:nrow(egonet_table)){\n    adj_egonet[as.numeric(egonet_table[i,\"user_id\"])+1,as.numeric(egonet_table[i,\"neighbour\"])] <- 1\n    if(i==k) break\n  }\n  \n  #writing the adjacency matrix in a file\n  write.table(adj_egonet, file = \"adj-matrix.csv\", sep = \"|\" , row.names=TRUE, col.names=FALSE , append=TRUE)\n  \n  #removing temp adjacency matrix\n  rm(adj_egonet)\n}\n",
+    "created" : 1438946135489.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "3483573622",
+    "id" : "3CF61C3F",
+    "lastKnownWriteTime" : 1438962207,
+    "path" : "C:/Users/prithviraj/Desktop/final-year-project/mathemetical-model-implementations/adjacency-matrix.R",
+    "project_path" : "adjacency-matrix.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
