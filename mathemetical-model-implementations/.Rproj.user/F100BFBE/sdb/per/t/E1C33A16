@@ -1,0 +1,17 @@
+{
+    "contents" : "#Function to read Data\nreadData <- function(NMIfilename, isHeader){\n  data <- read.table(NMIfilename, header=isHeader)\n  return(data)\n}\n\n\n#function to scale the CSV Data\nscaleing <- function(CSVDataMatrix, numOfNodes, numOfSamples){\n  \n  minScaledVal = 0;\n  maxScaledVal = 1;\n  minVal = 0;\n  maxVal = 0;\n  scaledCsvDataMatrix = 0;\n  \n  for(j in 0:numOfNodes){\n    minVal = CSVDataMatrix[j]\n    maxVal = CSVDataMatrix[j]\n    \n    for(i in 0:numOfSamples){\n      scaledCsvDataMatrix[i*numOfNodes+j] <- ((CSVDataMatrix[i*numOfNodes+j]-minVal)/(maxVal-minVal))*(maxScaledVal-minScaledVal)+minScaledVal;\n    }\n    \n  }\n  \n  return(scaledCsvDataMatrix);\n}\n\n\n#Exectution of the code\n\n#reading the data\nNMIDataMatrix <- readData(\"C:\\\\Users\\\\prithviraj\\\\Desktop\\\\final-year-project\\\\facebook\\\\0.feat\", FALSE)\nCSVDataMatrix <- readData(\"C:\\\\Users\\\\prithviraj\\\\Desktop\\\\final-year-project\\\\facebook\\\\facebook_combined.txt\", TRUE)\n\n#setting number of nodes || features\nnumOfNodes <- ncol(NMIData)-1\nnumOfSamples <- 5673\n\n#scaled csv data matrix\nscaledCsvDataMatrix <- scaleing(CSVDataMatrix, numOfNodes, numOfSamples)\n",
+    "created" : 1441174410732.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "2857848984",
+    "id" : "E1C33A16",
+    "lastKnownWriteTime" : 1441179813,
+    "path" : "C:/Users/prithviraj/Desktop/final-year-project/mathemetical-model-implementations/feature-reduction-algo.R",
+    "project_path" : "feature-reduction-algo.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
