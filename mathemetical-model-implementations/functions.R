@@ -268,7 +268,7 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
   }
   
   for(i in 1:K){
-    print(numClusterEle)
+    print(numClusterEle[i])
   }
   
   print("\nCluster Prototype Features")
@@ -303,7 +303,7 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
     }
     
   }
-  print(paste("\nVar is %f", varArray[1]))
+  print(paste("Var is ", varArray[1]))
   
   for(j in 1:numOfNodes){
     isSelected[j] <- 1
@@ -314,7 +314,7 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
       }  
     }
   }
-  
+  return(isSelected)
 }
 
 
@@ -484,7 +484,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
     for(i in 1:numOfNodes){
       oldClusterIndex[i] <- clusterIndex[i]
     }
-    obtainPrototypeFeature(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex)
+    isSelected <- obtainPrototypeFeature(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex)
     clusterLoop <-clusterLoop +1
     print(paste("\n cluster loop = ", clusterLoop))
   }
