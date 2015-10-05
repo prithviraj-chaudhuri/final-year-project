@@ -1,0 +1,17 @@
+{
+    "contents" : "\n#This Program is for feature selection\n#Author - Prithviraj Chaudhuri\n\n#including required files\nsource(\"functions.R\")\n\n\n#Exectution of the code\n\n#reading the data\nNMIDataMatrix <- readData(\"C:\\\\Users\\\\prithviraj\\\\Desktop\\\\final-year-project\\\\test-data\\\\test.mi\", FALSE)\nCSVDataMatrix <- readData(\"C:\\\\Users\\\\prithviraj\\\\Desktop\\\\final-year-project\\\\test-data\\\\test.feature\", TRUE)\n\nnumOfNodes <- ncol(NMIDataMatrix)\nmaximizerIndex <- matrix( c(0), nrow=1, ncol=numOfNodes)\ndVal <- matrix( c(0), nrow=1, ncol=numOfNodes)\n#creating the MI\n#NMIDataMatrix <- getNMI(CSVDataMatrix)\n\n\n\n\n#scaled csv data matrix\nscaledCsvDataMatrix <- scaleing(CSVDataMatrix)\n\n#calculating the variance of each of the feature vectors\nvarArray <- getVariance(scaledCsvDataMatrix)\n\n#calculating the density of variance sequence\ncomputeDensityVarSeq (NMIDataMatrix, scaledCsvDataMatrix, maximizerIndex, 0, dVal)\n\n\n",
+    "created" : 1443973230164.000,
+    "dirty" : false,
+    "encoding" : "UTF-8",
+    "folds" : "",
+    "hash" : "404805889",
+    "id" : "5C29745B",
+    "lastKnownWriteTime" : 1441892997,
+    "path" : "C:/Users/prithviraj/Desktop/final-year-project/mathemetical-model-implementations/feature-reduction-algo.R",
+    "project_path" : "feature-reduction-algo.R",
+    "properties" : {
+        "tempName" : "Untitled1"
+    },
+    "source_on_save" : false,
+    "type" : "r_source"
+}
