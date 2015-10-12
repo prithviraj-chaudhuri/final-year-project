@@ -89,7 +89,7 @@ getVariance <- function(scaledCsvDataMatrix, numOfNodes, numOfSamples){
     for(i in 1:numOfSamples){
       sum <- sum + ((scaledCsvDataMatrix[i,j]-getMean(scaledCsvDataMatrix, j))*(scaledCsvDataMatrix[i,j]-getMean(scaledCsvDataMatrix, j)))
     }
-    varArray[j] <- sum/numOfSamples
+    varArray[j] <- sum/(numOfSamples-1)
   }
   return(varArray)
 }
@@ -159,7 +159,7 @@ computeInducedDegree <- function(NMIDataMatrix, isSelected){
 
 
 #Function to Compute Ranking (This function needs to be modified Later)
-computeRanking <- function(inducedDegree, isShortListed, numOfNodes){
+computeRanking <- function(inducedDegree, isShortListed, numOfNodes, rank){
   
   isToBeChecked <- matrix( c(0), nrow = 1, ncol = numOfNodes) 
   sizeCheckList <- 0
@@ -178,10 +178,10 @@ computeRanking <- function(inducedDegree, isShortListed, numOfNodes){
     for(j in 1:numOfNodes){
       if(isToBeChecked[j]==1){
         if(inducedDegree[j] > bestValue){
-          print(paste("\nBefore swapping rank[i] = ", rank[i] ," and rank[j] = ", rank[j]))
+          print(paste("Before swapping rank[i] = ", rank[i] ," and rank[j] = ", rank[j]))
           bestIndex <- j
           bestValue <- inducedDegree[j]
-          print(paste("\nAfter swapping rank[i] = ", rank[i]," and rank[j] = ", rank[j]))
+          print(paste("After swapping rank[i] = ", rank[i]," and rank[j] = ", rank[j]))
         }
       }
     }
@@ -217,7 +217,7 @@ findingClusterIndex <- function(NMIDataMatrix, isSelected, clusterIndex){
     }
   }
   
-  print(paste("\nIndex = ", index))
+  print(paste("Index = ", index))
   
   for(i in 1:numOfNodes){
     if(isSelected[i] == 1){
@@ -236,11 +236,10 @@ findingClusterIndex <- function(NMIDataMatrix, isSelected, clusterIndex){
 }
 
 
-
 #Function to obtain prototyping feature
-obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex){
+obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex, K){
   
-  K <- 6
+  
   
   numOfNodes <- ncol(scaledCsvDataMatrix)
   numOfSamples <- nrow(scaledCsvDataMatrix)
@@ -250,7 +249,7 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
   numClusterEle <- matrix( c(0), nrow = 1, ncol = K )
   
   for(i in 1:numOfNodes){
-    numClusterEle[clusterIndex[i]] <- numClusterEle[clusterIndex[i]] + 1
+    numClusterEle[clusterIndex[i]+1] <- numClusterEle[clusterIndex[i]+1] + 1
   }
   
   for(i in 1:numOfNodes){
@@ -261,17 +260,19 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
     }
   }
   
-  print("\nCluster Degree value of each feature\n")
+  print("Cluster Degree value of each feature")
   
   for(i in 1:numOfNodes){
     print(simDegree[i])
   }
   
+  
+  print("Number of cluster elements")
   for(i in 1:K){
     print(numClusterEle[i])
   }
   
-  print("\nCluster Prototype Features")
+  print("Cluster Prototype Features")
   
   for(index in 1:K){
     
@@ -279,14 +280,14 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
     minVal <- 0
     
     for(j in 1:numOfNodes){
-      if(clusterIndex[j] == index){
-        if(simDegree[j] == 0){
-          clusterPrototypeFeature[index] <- j
+      if(clusterIndex[j] == index-1){
+        if(simDegree[j] == 1){
+          clusterPrototypeFeature[index] <- (j-1)
           break
         }
         
         if(varArray[j] > maxVal){
-          clusterPrototypeFeature[index] <- j
+          clusterPrototypeFeature[index] <- (j-1)
           maxVal <- varArray[j]
         }
       }
@@ -294,21 +295,27 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
     print(clusterPrototypeFeature[index])
   }
   
+  clusterNodes <- matrix(c(0), nrow=noOfClusters, ncol=numOfNodes)
   
   for(index in 1:K){
-    print(paste("\nCluster with index ",index," has the following features\n"))
+    print(paste("Cluster with index ",index," has the following features"))
     for(j in 1:numOfNodes){
-      if(clusterIndex[j]==index)
+      if(clusterIndex[j]==index-1){
+        clusterNodes[index,j] <- j
         print(j)
+      }  
     }
     
   }
+  
+  assign("clusterNodes", clusterNodes, envir = .GlobalEnv)
+  
   print(paste("Var is ", varArray[1]))
   
   for(j in 1:numOfNodes){
     isSelected[j] <- 1
     for(index in 1:K){
-      if(clusterPrototypeFeature[index]==j){
+      if(clusterPrototypeFeature[index]==j-1){
         isSelected[j] <- 0
         break
       }  
@@ -321,10 +328,9 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
 
 
 #Function to compute the density variation sequences (Needs some serious debugging)
-computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, time, dVal){
+computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, noOfClusters){
   
-  K <- 6 #need to know what this means
-  
+  K <- noOfClusters
   numOfNodes <- ncol(scaledCsvDataMatrix)
   numOfSamples <- nrow(scaledCsvDataMatrix)
   print(paste(numOfNodes,numOfSamples))
@@ -337,6 +343,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
   rank <- matrix( c(0), nrow = 1, ncol = numOfNodes )
   clusterIndex <- matrix( c(0), nrow = 1, ncol = numOfNodes )
   oldClusterIndex <- matrix( c(0), nrow = 1, ncol = numOfNodes )
+  
   
   currentDensity <- computeDensity(NMIDataMatrix, isSelected)
   optimalDensity <- currentDensity
@@ -354,8 +361,11 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
       if(isSelected[i]==0){
         nodeCount <- nodeCount + 1
       }
-      rank[i] <- 9999
+      rank[i] <- 999999
     }
+    
+    print("Starting the next iteration")
+    print(paste("Total number of non-selected nodes is",nodeCount))
     
     if(nodeCount==0 || nodeCount <= K){
       break
@@ -364,7 +374,6 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
    
     inducedDegree <- computeInducedDegree (NMIDataMatrix, isSelected)
    
-    
     
     
     noShortListed <- 0
@@ -385,7 +394,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
       print(paste("There is ",noShortListed," shortlisted Candidates " ))
     }
     
-    rankLimit <- 1
+    rankLimit <- 2
     
     print(paste("The rank Limit is ", rankLimit))
     
@@ -399,7 +408,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
       break
     }
     
-    rank <- computeRanking(inducedDegree, isShortListed, numOfNodes)
+    rank <- computeRanking(inducedDegree, isShortListed, numOfNodes, rank)
     
     for(i in 1:numOfNodes){
       isCurrentlyDiscarded[i] <- 0
@@ -436,7 +445,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
         density <- (currentDensity*noNodes+sumWeight)/(noNodes+1)
         
         if(density < currentDensity){
-          print(paste("One node with id ",i+1," is being read"))
+          print(paste("One node with id ",i+1," is being readded"))
           currentDensity <- density
         }else{
           isSelected[i] <- 1
@@ -448,16 +457,20 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
       optimalDensity <- currentDensity
       optimalNodeCount <- 0
       
+      for (i in 1:numOfNodes){
+        isOptimal[i]= 1-isSelected[i];
+      }
+      
       for(i in 1:numOfNodes){
         if(isOptimal[i] == 1){
           optimalNodeCount <- optimalNodeCount + 1
           print(i+1)
         }
       }
-      print("\n")
+      print("")
     }
-    print(paste("\nOptimal Node Count is ", optimalNodeCount))
-    print(paste("\nOptimal Density is ", optimalDensity))
+    print(paste("Optimal Node Count is ", optimalNodeCount))
+    print(paste("Optimal Density is ", optimalDensity))
     
     if(optimalNodeCount==K)
       break
@@ -467,28 +480,32 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, maximizer, 
   while(1){
     
     clusterIndex <- findingClusterIndex(NMIDataMatrix, isSelected, clusterIndex)
+    
+    print("Cluster Index")
+    for(i in 1:numOfNodes){
+      print(clusterIndex[i])
+    }
+    
     continueFlag <- 0
     for(i in 1:numOfNodes){
       if(clusterIndex[i] != oldClusterIndex[i]){
         continueFlag <- 1
-        print("\nFirst Break")
+        print("First Break")
         break
       }
     }
     
     if(continueFlag == 0){
-      print("\nSecond Break")
+      print("Second Break")
       break
     }
     
     for(i in 1:numOfNodes){
       oldClusterIndex[i] <- clusterIndex[i]
     }
-    isSelected <- obtainPrototypeFeature(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex)
+    isSelected <- obtainPrototypeFeature(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex, K)
     clusterLoop <-clusterLoop +1
-    print(paste("\n cluster loop = ", clusterLoop))
+    print(paste(" cluster loop = ", clusterLoop))
   }
-  
-  time <- t
 }
 

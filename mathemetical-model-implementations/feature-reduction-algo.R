@@ -10,8 +10,8 @@ source("functions.R")
 #Exectution of the code
 
 #reading the data
-NMIDataMatrix <- readData("C:\\Users\\prithviraj\\Desktop\\final-year-project\\test-data\\test.mi", FALSE)
-CSVDataMatrix <- readData("C:\\Users\\prithviraj\\Desktop\\final-year-project\\test-data\\test.feature", TRUE)
+NMIDataMatrix <- readData("C:\\Users\\prithviraj\\Desktop\\final-year-project\\test-data\\test3.mi", FALSE)
+CSVDataMatrix <- readData("C:\\Users\\prithviraj\\Desktop\\final-year-project\\test-data\\test3.feature", FALSE)
 
 numOfNodes <- ncol(NMIDataMatrix)
 maximizerIndex <- matrix( c(0), nrow=1, ncol=numOfNodes)
@@ -28,7 +28,13 @@ scaledCsvDataMatrix <- scaleing(CSVDataMatrix)
 #calculating the variance of each of the feature vectors
 varArray <- getVariance(scaledCsvDataMatrix)
 
+#The number of clusters
+noOfClusters <- 3
+
+#The arrangement of the features
+clusterNodes <- matrix(c(0), nrow=noOfClusters, ncol=numOfNodes)
+
 #calculating the density of variance sequence
-computeDensityVarSeq (NMIDataMatrix, scaledCsvDataMatrix, maximizerIndex, 0, dVal)
+computeDensityVarSeq(NMIDataMatrix, scaledCsvDataMatrix, varArray, noOfClusters)
 
 
