@@ -1,0 +1,22 @@
+{
+    "contents" : "",
+    "created" : 1447058095106.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "50F3EA13",
+    "lastKnownWriteTime" : 4,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "caption" : "CSVDataMatrix",
+        "contentUrl" : "content?title=CSVDataMatrix&file=57c910d33ed042f08d88c54518cf6040.htm",
+        "displayedObservations" : "7",
+        "displayedVariables" : 5,
+        "totalObservations" : "7",
+        "variables" : "5"
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

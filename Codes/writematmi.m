@@ -13,7 +13,7 @@ for ii=1:1:row
     
     
     tbuff=sprintf(repmat('%.5f,',1,col),wrtbuff);
-    tbuff=[tbuff,sprintf('n\n')];
+    tbuff=[tbuff,sprintf('\n')];
     %buff=[buff,tbuff];
     fwrite(fd,tbuff);
     clear tbuff;

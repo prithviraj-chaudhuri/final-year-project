@@ -1,0 +1,22 @@
+{
+    "contents" : "",
+    "created" : 1447058235930.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "C412FF20",
+    "lastKnownWriteTime" : 7867635044291604338,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "caption" : "scaledCsvDataMatrix",
+        "contentUrl" : "content?title=scaledCsvDataMatrix&file=235cc0ac2e0a4bd79cbbeaae56de6a57.htm",
+        "displayedObservations" : "7",
+        "displayedVariables" : 5,
+        "totalObservations" : "7",
+        "variables" : "5"
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

@@ -1,0 +1,22 @@
+{
+    "contents" : "",
+    "created" : 1447058098636.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "3BD6E79C",
+    "lastKnownWriteTime" : 304087408,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "caption" : "NMIDataMatrix",
+        "contentUrl" : "content?title=NMIDataMatrix&file=c7fac9d5880343a3b97c69e556d2dfc2.htm",
+        "displayedObservations" : "5",
+        "displayedVariables" : 5,
+        "totalObservations" : "5",
+        "variables" : "5"
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

@@ -13,7 +13,8 @@ source("functions.R")
 NMIDataMatrix <- readData("C:\\Users\\prithviraj\\Desktop\\final-year-project\\test-data\\test3.mi", FALSE)
 CSVDataMatrix <- readData("C:\\Users\\prithviraj\\Desktop\\final-year-project\\test-data\\test3.feature", FALSE)
 
-numOfNodes <- ncol(NMIDataMatrix)
+numOfNodes <- nrow(NMIDataMatrix)
+numOfCols <- ncol(NMIDataMatrix)
 maximizerIndex <- matrix( c(0), nrow=1, ncol=numOfNodes)
 dVal <- matrix( c(0), nrow=1, ncol=numOfNodes)
 #creating the MI
@@ -33,6 +34,9 @@ noOfClusters <- 3
 
 #The arrangement of the features
 clusterNodes <- matrix(c(0), nrow=noOfClusters, ncol=numOfNodes)
+
+#ClusterNumber for only 1 view
+clusterNumber <- 0
 
 #calculating the density of variance sequence
 computeDensityVarSeq(NMIDataMatrix, scaledCsvDataMatrix, varArray, noOfClusters)

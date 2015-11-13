@@ -77,7 +77,7 @@ getMean <- function(scaledCsvDataMatrix, col){
 
 
 #Function to calculate the variance of the scaled matrix
-getVariance <- function(scaledCsvDataMatrix, numOfNodes, numOfSamples){
+getVariance <- function(scaledCsvDataMatrix){
   
   numOfNodes <- ncol(scaledCsvDataMatrix)
   numOfSamples <- nrow(scaledCsvDataMatrix)
@@ -100,9 +100,12 @@ getVariance <- function(scaledCsvDataMatrix, numOfNodes, numOfSamples){
 
 
 #Function to compute density of the Feature matrix
-computeDensity <- function(NMIDataMatrix, isSelected){
+computeDensity <- function(NMIDataMatrix, isSelected, clusterNumber){
   
-  numOfNodes <- ncol(NMIDataMatrix)
+  print("Compute Density")
+  
+  numOfNodes <- nrow(NMIDataMatrix)
+  numOfCols <- ncol(NMIDataMatrix)
   
   numNodesInducedSet <- 0
   sumWeights <- 0
@@ -111,9 +114,16 @@ computeDensity <- function(NMIDataMatrix, isSelected){
     if(isSelected[i] == 0){
       numNodesInducedSet <- numNodesInducedSet+1
     }
-    for(j in i:numOfNodes){
-      if(isSelected[i]==0 && isSelected[j]==0 && NMIDataMatrix[i,j]<=1.00){
-        sumWeights <- sumWeights + NMIDataMatrix[i,j]
+    for(j in i:numOfCols){
+      if(numOfCols==numOfNodes && clusterNumber == 0){ # if condition added to accomodate rectangular mi matrix 
+        if(isSelected[i]==0 && isSelected[j]==0 && NMIDataMatrix[i,j]<=1.00){ #if mi not normalized then keep threshold high
+          sumWeights <- sumWeights + NMIDataMatrix[i,j]
+        }
+      }else{
+        if(i<6 && j <6)
+          if(isSelected[i]==0 && NMIDataMatrix[i,j]<=1.00){ #if mi not normalized then keep threshold high
+            sumWeights <- sumWeights + NMIDataMatrix[i,j]
+          }  
       }
     }
   }
@@ -127,9 +137,12 @@ computeDensity <- function(NMIDataMatrix, isSelected){
 
 
 #Function to compute induced degree
-computeInducedDegree <- function(NMIDataMatrix, isSelected){
+computeInducedDegree <- function(NMIDataMatrix, isSelected, clusterNumber){
   
-  numOfNodes <- ncol(NMIDataMatrix)
+  print("Compute Induced Degree")
+  
+  numOfNodes <- nrow(NMIDataMatrix)
+  numofCols <- ncol(NMIDataMatrix)
   inducedDegree <- matrix( c(0), nrow = 1, ncol = numOfNodes )
   
   sumDegreeWeights <- 0
@@ -138,12 +151,20 @@ computeInducedDegree <- function(NMIDataMatrix, isSelected){
   for(i in 1:numOfNodes){
     if (isSelected[i] == 0){
       sumDegreeWeights <- 0
-      for(j in 1:numOfNodes){
-        if(isSelected[j] == 0 && i!=j && NMIDataMatrix[i,j]<=1.00){
-          sumDegreeWeights <- sumDegreeWeights + NMIDataMatrix[i,j]
-          numInducedNodes <- numInducedNodes+1
-          print(paste("sum degree weights = ", sumDegreeWeights))
-        }
+      for(j in 1:numofCols){
+        if(numofCols==numOfNodes && clusterNumber == 0){ # if condition added to accomodate rectangular mi matrix 
+          if(isSelected[j] == 0 && i!=j && NMIDataMatrix[i,j]<=1.00){ #threshold to be changed as above
+            sumDegreeWeights <- sumDegreeWeights + NMIDataMatrix[i,j]
+            numInducedNodes <- numInducedNodes+1
+            print(paste("sum degree weights = ", sumDegreeWeights))
+          }
+        }else{
+          if(NMIDataMatrix[i,j]<=1.00){ #threshold to be changed as above
+            sumDegreeWeights <- sumDegreeWeights + NMIDataMatrix[i,j]
+            numInducedNodes <- numInducedNodes+1
+            print(paste("sum degree weights = ", sumDegreeWeights))
+          }
+        }  
       }
       inducedDegree[i] <- sumDegreeWeights
     }else{
@@ -160,6 +181,8 @@ computeInducedDegree <- function(NMIDataMatrix, isSelected){
 
 #Function to Compute Ranking (This function needs to be modified Later)
 computeRanking <- function(inducedDegree, isShortListed, numOfNodes, rank){
+  
+  print("Compute Ranking")
   
   isToBeChecked <- matrix( c(0), nrow = 1, ncol = numOfNodes) 
   sizeCheckList <- 0
@@ -205,9 +228,12 @@ getComb <- function(n, t){
 
 
 #function to find the cluster index
-findingClusterIndex <- function(NMIDataMatrix, isSelected, clusterIndex){
+findingClusterIndex <- function(NMIDataMatrix, isSelected, clusterIndex, clusterNumber){
   
-  numOfNodes <- ncol(NMIDataMatrix)
+  print("Compute Cluster Index")
+  
+  numOfNodes <- nrow(NMIDataMatrix)
+  numOfCols <- ncol(NMIDataMatrix)
   
   index <- 0
   for(i in 1:numOfNodes){
@@ -223,12 +249,21 @@ findingClusterIndex <- function(NMIDataMatrix, isSelected, clusterIndex){
     if(isSelected[i] == 1){
       maxSimVal <- 0
       for(j in 1:numOfNodes){
-        if(i!=j && isSelected[j] == 0){
-          if(NMIDataMatrix[i,j] > maxSimVal){
-            maxSimVal <- NMIDataMatrix[i,j]
+        if(numOfCols == numOfNodes && clusterNumber == 0){ # if condition added to accomodate rectangular mi matrix 
+          if(i!=j && isSelected[j] == 0){
+            if(NMIDataMatrix[i,j] > maxSimVal){
+              maxSimVal <- NMIDataMatrix[i,j]
+              clusterIndex[i] <- clusterIndex[j]
+            }
+          }
+        }else{
+          correl <- cor(t(NMIDataMatrix[i,]), t(NMIDataMatrix[j,]))[1,1] 
+          print(paste("Correlation value = ", correl))
+          if(correl > maxSimVal){
+            maxSimVal <- cor(t(NMIDataMatrix[i,]), t(NMIDataMatrix[j,])) #assigning set f1 to f1
             clusterIndex[i] <- clusterIndex[j]
           }
-        }
+        }  
       }
     } 
   }
@@ -237,11 +272,12 @@ findingClusterIndex <- function(NMIDataMatrix, isSelected, clusterIndex){
 
 
 #Function to obtain prototyping feature
-obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex, K){
+obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex, K, clusterNumber){
   
+  print("Compute Prototype Feature")
   
-  
-  numOfNodes <- ncol(scaledCsvDataMatrix)
+  numOfNodes <- nrow(NMIDataMatrix)
+  numOfCols <- ncol(NMIDataMatrix)
   numOfSamples <- nrow(scaledCsvDataMatrix)
   
   simDegree <- matrix( c(0), nrow = 1, ncol = numOfNodes )
@@ -253,10 +289,14 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
   }
   
   for(i in 1:numOfNodes){
-    for(j in 1:numOfNodes){
-      if(i != j && clusterIndex[i] == clusterIndex[j] ){
+    for(j in 1:numOfCols){
+      if(numOfCols==numOfNodes && clusterNumber == 0){ # if condition added to accomodate rectangular mi matrix 
+        if(i != j && clusterIndex[i] == clusterIndex[j] ){
+          simDegree[i] <- simDegree[i] + NMIDataMatrix[i,j]
+        }
+      }else{
         simDegree[i] <- simDegree[i] + NMIDataMatrix[i,j]
-      }
+      }  
     }
   }
   
@@ -274,7 +314,9 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
   
   print("Cluster Prototype Features")
   
-  for(index in 1:K){
+
+
+  for(index in 1:K){ 
     
     maxVal <- 0
     minVal <- 0
@@ -285,7 +327,11 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
           clusterPrototypeFeature[index] <- (j-1)
           break
         }
-        
+        if(clusterNumber == 1){
+          varArray <- varArray1
+        }else if(clusterNumber == 2){
+          varArray <- varArray2
+        }
         if(varArray[j] > maxVal){
           clusterPrototypeFeature[index] <- (j-1)
           maxVal <- varArray[j]
@@ -295,6 +341,8 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
     print(clusterPrototypeFeature[index])
   }
   
+
+  print(paste("The number of rows in cluster Matrix  = ", numOfNodes))
   clusterNodes <- matrix(c(0), nrow=noOfClusters, ncol=numOfNodes)
   
   for(index in 1:K){
@@ -308,7 +356,13 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
     
   }
   
-  assign("clusterNodes", clusterNodes, envir = .GlobalEnv)
+  if(clusterNumber == 0){
+    assign("clusterNodes", clusterNodes, envir = .GlobalEnv)
+  }else if(clusterNumber == 1){
+    assign("clusterNodes1", clusterNodes, envir = .GlobalEnv)
+  }else if(clusterNumber == 2){
+    assign("clusterNodes2", clusterNodes, envir = .GlobalEnv)
+  }
   
   print(paste("Var is ", varArray[1]))
   
@@ -328,10 +382,13 @@ obtainPrototypeFeature <- function(NMIDataMatrix, scaledCsvDataMatrix, isSelecte
 
 
 #Function to compute the density variation sequences (Needs some serious debugging)
-computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, noOfClusters){
+computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, noOfClusters, clusterNumber){
+  
+  print("Compute Var Seq")
   
   K <- noOfClusters
-  numOfNodes <- ncol(scaledCsvDataMatrix)
+  numOfNodes <- nrow(NMIDataMatrix)
+  numOfCols <- ncol(NMIDataMatrix)
   numOfSamples <- nrow(scaledCsvDataMatrix)
   print(paste(numOfNodes,numOfSamples))
   
@@ -345,7 +402,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, n
   oldClusterIndex <- matrix( c(0), nrow = 1, ncol = numOfNodes )
   
   
-  currentDensity <- computeDensity(NMIDataMatrix, isSelected)
+  currentDensity <- computeDensity(NMIDataMatrix, isSelected, clusterNumber)
   optimalDensity <- currentDensity
   
   clusterLoop <- 0
@@ -371,10 +428,9 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, n
       break
     }
     
-    
-    inducedDegree <- computeInducedDegree (NMIDataMatrix, isSelected)
-    
-    
+   
+    inducedDegree <- computeInducedDegree (NMIDataMatrix, isSelected, clusterNumber)
+   
     
     noShortListed <- 0
     for(i in 1:numOfNodes){
@@ -403,11 +459,11 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, n
     }
     
     if(noShortListed == 1){
-      rankLimit <- 1
+      rankLimit <- 2
     }else if(noShortListed == 0){
       break
     }
-    
+    print(paste("Second rankLimit is ", rankLimit))
     rank <- computeRanking(inducedDegree, isShortListed, numOfNodes, rank)
     
     for(i in 1:numOfNodes){
@@ -422,7 +478,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, n
       }
     }
     
-    currentDensity <- computeDensity(NMIDataMatrix, isSelected)
+    currentDensity <- computeDensity(NMIDataMatrix, isSelected, clusterNumber)
     
     density <- 0
     noNodes <- 0
@@ -435,10 +491,17 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, n
         sumWeight <- 0
         isSelected[i] <- 0
         
-        for(j in 1:numOfNodes){
-          if(isSelected[j]==0 && j!=i && (NMIDataMatrix[i,j]<=1.00)){
-            noNodes <- noNodes + 1
-            sumWeight <- sumWeight + NMIDataMatrix[i,j]
+        for(j in 1:numOfCols){
+          if(numOfCols == numOfNodes && clusterNumber==0){ #modified for multiview
+            if(isSelected[j]==0 && j!=i && (NMIDataMatrix[i,j]<=1.00)){
+              noNodes <- noNodes + 1
+              sumWeight <- sumWeight + NMIDataMatrix[i,j]
+            }
+          }else{
+            if((NMIDataMatrix[i,j]<=1.00)){
+              noNodes <- noNodes + 1
+              sumWeight <- sumWeight + NMIDataMatrix[i,j]
+            }
           }
         }
         
@@ -479,7 +542,7 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, n
   
   while(1){
     
-    clusterIndex <- findingClusterIndex(NMIDataMatrix, isSelected, clusterIndex)
+    clusterIndex <- findingClusterIndex(NMIDataMatrix, isSelected, clusterIndex, clusterNumber)
     
     print("Cluster Index")
     for(i in 1:numOfNodes){
@@ -503,8 +566,10 @@ computeDensityVarSeq <- function(NMIDataMatrix, scaledCsvDataMatrix, varArray, n
     for(i in 1:numOfNodes){
       oldClusterIndex[i] <- clusterIndex[i]
     }
-    isSelected <- obtainPrototypeFeature(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex, K)
+    isSelected <- obtainPrototypeFeature(NMIDataMatrix, scaledCsvDataMatrix, isSelected, clusterIndex, K, clusterNumber)
     clusterLoop <-clusterLoop +1
     print(paste(" cluster loop = ", clusterLoop))
   }
 }
+
+

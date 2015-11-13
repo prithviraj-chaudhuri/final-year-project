@@ -1,0 +1,22 @@
+{
+    "contents" : "",
+    "created" : 1447058396260.000,
+    "dirty" : false,
+    "encoding" : "",
+    "folds" : "",
+    "hash" : "0",
+    "id" : "D779D9D2",
+    "lastKnownWriteTime" : 195695840,
+    "path" : null,
+    "project_path" : null,
+    "properties" : {
+        "caption" : "varArray",
+        "contentUrl" : "content?title=varArray&file=0554285f9fe64b6296b2f673c6c77c73.htm",
+        "displayedObservations" : "1",
+        "displayedVariables" : 5,
+        "totalObservations" : "1",
+        "variables" : "5"
+    },
+    "source_on_save" : false,
+    "type" : "r_dataframe"
+}

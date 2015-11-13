@@ -12,7 +12,7 @@ for ii=1:1:row
     wrtbuff(1:col)=matrix(ii,:);
     tbuff=sprintf('%d ',1);
     
-    tbuff=sprintf(repmat('%.5f,',1,col),wrtbuff);
+    tbuff=sprintf(repmat('%.5f ',1,col),wrtbuff);
     tbuff=[tbuff,sprintf('\n')];
     %buff=[buff,tbuff];
     fwrite(fd,tbuff);

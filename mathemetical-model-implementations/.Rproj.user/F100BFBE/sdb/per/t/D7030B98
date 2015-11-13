@@ -1,21 +1,21 @@
 {
     "contents" : "",
-    "created" : 1443980571620.000,
+    "created" : 1447058680385.000,
     "dirty" : false,
     "encoding" : "",
     "folds" : "",
     "hash" : "0",
-    "id" : "4D66E810",
+    "id" : "D7030B98",
     "lastKnownWriteTime" : 7867635044291604338,
     "path" : null,
     "project_path" : null,
     "properties" : {
-        "caption" : "NMIDataMatrix",
-        "contentUrl" : "content?title=NMIDataMatrix&file=53c14fda00674f5a900148c394293acb.htm",
-        "displayedObservations" : 5,
+        "caption" : "clusterNodes",
+        "contentUrl" : "content?title=clusterNodes&file=507ec6cec4834e689dadf5b53691c339.htm",
+        "displayedObservations" : "3",
         "displayedVariables" : 5,
-        "totalObservations" : 5,
-        "variables" : 5
+        "totalObservations" : "3",
+        "variables" : "5"
     },
     "source_on_save" : false,
     "type" : "r_dataframe"
